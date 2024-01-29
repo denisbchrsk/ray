@@ -289,6 +289,14 @@ def debug(address):
     "Defaults to the node's ip_address",
 )
 @click.option(
+    "--redis-username",
+    required=False,
+    hidden=True,
+    type=str,
+    default=ray_constants.REDIS_DEFAULT_USERNAME,
+    help="If provided, secure Redis ports with this username",
+)
+@click.option(
     "--redis-password",
     required=False,
     hidden=True,
@@ -568,6 +576,7 @@ def start(
     address,
     port,
     node_name,
+    redis_username,
     redis_password,
     redis_shard_ports,
     object_manager_port,
@@ -670,6 +679,7 @@ def start(
         node_manager_port=node_manager_port,
         memory=memory,
         object_store_memory=object_store_memory,
+        redis_username=redis_username,
         redis_password=redis_password,
         redirect_output=redirect_output,
         num_cpus=num_cpus,
@@ -1891,6 +1901,13 @@ def timeline(address):
     "--address", required=False, type=str, help="Override the address to connect to."
 )
 @click.option(
+    "--redis_username",
+    required=False,
+    type=str,
+    default=ray_constants.REDIS_DEFAULT_USERNAME,
+    help="Connect to ray with redis_username.",
+)
+@click.option(
     "--redis_password",
     required=False,
     type=str,
@@ -1938,6 +1955,7 @@ terminal width is less than 137 characters.",
 )
 def memory(
     address,
+    redis_username,
     redis_password,
     group_by,
     sort_by,
@@ -1955,6 +1973,7 @@ def memory(
     header = "=" * 8 + f" Object references status: {time} " + "=" * 8
     mem_stats = memory_summary(
         address,
+        redis_username,
         redis_password,
         group_by,
         sort_by,
@@ -1969,6 +1988,13 @@ def memory(
 @cli.command()
 @click.option(
     "--address", required=False, type=str, help="Override the address to connect to."
+)
+@click.option(
+    "--redis_username",
+    required=False,
+    type=str,
+    default=ray_constants.REDIS_DEFAULT_USERNAME,
+    help="Connect to ray with redis_username.",
 )
 @click.option(
     "--redis_password",
@@ -1986,7 +2012,7 @@ def memory(
     help="Experimental: Display additional debuggging information.",
 )
 @PublicAPI
-def status(address: str, redis_password: str, verbose: bool):
+def status(address: str, redis_username: str, redis_password: str, verbose: bool):
     """Print cluster status, including autoscaling info."""
     address = services.canonicalize_bootstrap_address_or_die(address)
     if not ray._raylet.check_health(address):
@@ -2257,6 +2283,13 @@ def kuberay_autoscaler(cluster_name: str, cluster_namespace: str) -> None:
     "--address", required=False, type=str, help="Override the address to connect to."
 )
 @click.option(
+    "--redis_username",
+    required=False,
+    type=str,
+    default=ray_constants.REDIS_DEFAULT_USERNAME,
+    help="Connect to ray with redis_username.",
+)
+@click.option(
     "--redis_password",
     required=False,
     type=str,
@@ -2276,7 +2309,7 @@ def kuberay_autoscaler(cluster_name: str, cluster_namespace: str) -> None:
     default=False,
     help="Skip comparison of GCS version with local Ray version.",
 )
-def healthcheck(address, redis_password, component, skip_version_check):
+def healthcheck(address, redis_username, redis_password, component, skip_version_check):
     """
     This is NOT a public api.
 

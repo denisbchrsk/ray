@@ -864,6 +864,12 @@ def main():
         "--address", required=False, type=str, help="Address to use to connect to Ray"
     )
     parser.add_argument(
+        "--redis-username",
+        required=False,
+        type=str,
+        help="Username for connecting to Redis",
+    )
+    parser.add_argument(
         "--redis-password",
         required=False,
         type=str,
@@ -887,6 +893,7 @@ def main():
         server = serve_proxier(
             hostport,
             args.address,
+            redis_username=args.redis_username,
             redis_password=args.redis_password,
             runtime_env_agent_address=args.runtime_env_agent_address,
         )

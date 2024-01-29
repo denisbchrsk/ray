@@ -4922,11 +4922,11 @@ cdef void async_callback(shared_ptr[CRayObject] obj,
         cpython.Py_DECREF(user_callback)
 
 
-def del_key_from_storage(host, port, password, use_ssl, key):
-    return RedisDelKeySync(host, port, password, use_ssl, key)
+def del_key_from_storage(host, port, username, password, use_ssl, key):
+    return RedisDelKeySync(host, port, username, password, use_ssl, key)
 
 
-def get_session_key_from_storage(host, port, password, use_ssl, config, key):
+def get_session_key_from_storage(host, port, username, password, use_ssl, config, key):
     """
     Get the session key from the storage.
     Intended to be used for session_name only.
@@ -4934,6 +4934,7 @@ def get_session_key_from_storage(host, port, password, use_ssl, config, key):
         host: The address of the owner (caller) of the
             generator task.
         port: The task ID of the generator task.
+        username: The redis username.
         password: The redis password.
         use_ssl: Whether to use SSL.
         config: The Ray config. Used to get storage namespace.
@@ -4941,7 +4942,7 @@ def get_session_key_from_storage(host, port, password, use_ssl, config, key):
     """
     cdef:
         c_string data
-    result = RedisGetKeySync(host, port, password, use_ssl, config, key, &data)
+    result = RedisGetKeySync(host, port, username, password, use_ssl, config, key, &data)
     if result:
         return data
     else:

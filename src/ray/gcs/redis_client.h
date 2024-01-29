@@ -31,10 +31,12 @@ class RedisClientOptions {
  public:
   RedisClientOptions(const std::string &ip,
                      int port,
+                     const std::string &username,
                      const std::string &password,
                      bool enable_ssl = false)
       : server_ip_(ip),
         server_port_(port),
+        username_(username),
         password_(password),
         enable_ssl_(enable_ssl) {}
 
@@ -42,7 +44,8 @@ class RedisClientOptions {
   std::string server_ip_;
   int server_port_;
 
-  // Password of Redis.
+  // Redis credentials
+  std::string username_;
   std::string password_;
 
   // Whether to use tls/ssl for redis connection
